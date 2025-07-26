@@ -180,7 +180,6 @@ $(function() {
         row.append($('<td>').text(atk.udpdestinationport));
         row.append($('<td>').text(atk.bps));
         tbody.append(row);
-
         fetchIpInfo(atk.ipsource, function(info) {
           asnTd.text(info.asn);
           countryTd.text(info.country);
