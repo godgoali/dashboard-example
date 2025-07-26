@@ -141,49 +141,18 @@ $(function() {
     });
   };
 
-  var ipInfoCache = {};
-
-  function fetchIpInfo(ip, cb) {
-    if(ipInfoCache[ip]) {
-      cb(ipInfoCache[ip]);
-      return;
-    }
-    $.ajax({
-      url: 'https://ip-api.com/json/' + ip,
-      data: {fields: 'as,country'},
-      dataType: 'json',
-      success: function(resp) {
-        var info = {asn: resp.as || 'N/A', country: resp.country || 'N/A'};
-        ipInfoCache[ip] = info;
-        cb(info);
-      },
-      error: function() {
-        cb({asn: 'N/A', country: 'N/A'});
-      },
-      timeout: 5000
-    });
-  }
-
   function updateAttacks(data) {
     var tbody = $('#attackTable tbody');
     tbody.empty();
     if(data && data.length) {
       data.forEach(function(atk) {
         var row = $('<tr>');
-        var asnTd = $('<td>').text('...');
-        var countryTd = $('<td>').text('...');
         row.append($('<td>').text(atk.ipsource));
-        row.append(asnTd);
-        row.append(countryTd);
         row.append($('<td>').text(atk.udpsourceport));
         row.append($('<td>').text(atk.ipdestination));
         row.append($('<td>').text(atk.udpdestinationport));
         row.append($('<td>').text(atk.bps));
         tbody.append(row);
-        fetchIpInfo(atk.ipsource, function(info) {
-          asnTd.text(info.asn);
-          countryTd.text(info.country);
-        });
       });
     }
   }

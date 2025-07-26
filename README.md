@@ -10,10 +10,8 @@ http://blog.sflow.com/2015/09/real-time-analytics-and-control.html
 
 The dashboard now includes an *Attack List* panel that shows current UDP
 flows. Each entry displays source and destination IP/port as well as the
-bandwidth in bits per second. The source IP column now automatically
-looks up and displays the Autonomous System (ASN) and country for the
-address. Access the live attack data using the REST endpoint
-`../scripts/metrics.js/attacks/json`.
+bandwidth in bits per second. Access the live attack data using the REST
+endpoint `../scripts/metrics.js/attacks/json`.
 
 For more information, visit:
 http://www.sFlow-RT.com
