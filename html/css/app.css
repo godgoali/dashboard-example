@@ -8,3 +8,15 @@ div.slider {
     padding-left:50px;
     background-color:white;
 }
+#attackTable {
+    width:100%;
+    border-collapse: collapse;
+}
+#attackTable th, #attackTable td {
+    border: 1px solid #ccc;
+    padding: 2px 4px;
+    text-align: left;
+}
+#attackTable th {
+    background-color: #f0f0f0;
+}
