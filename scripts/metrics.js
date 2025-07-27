@@ -19,6 +19,10 @@ setFlow('dashboard_example_ddos',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
    value:'bytes', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
 
+setFlow('dashboard_example_ddos_pkts',
+  {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
+   value:'frames', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
+
 var other = '-other-';
 function calculateTopN(metric,n,minVal,total_bps) {     
   var total, top, topN, i, bps;
@@ -66,17 +70,26 @@ setHttpHandler(function(req) {
       break;
     case 'attacks':
       if(path.length > 1) throw "not_found";
-      var top = activeFlows('ALL','dashboard_example_ddos',20,0,'sum');
+      var topBytes = activeFlows('ALL','dashboard_example_ddos',20,0,'sum');
+      var topPkts = activeFlows('ALL','dashboard_example_ddos_pkts',20,0,'sum');
+      var pktMap = {};
       result = [];
-      if(top) {
-        for(var i = 0; i < top.length; i++) {
-          var fields = top[i].key.split(SEP);
+      if(topPkts) {
+        for(var j = 0; j < topPkts.length; j++) {
+          pktMap[topPkts[j].key] = topPkts[j].value;
+        }
+      }
+      if(topBytes) {
+        for(var i = 0; i < topBytes.length; i++) {
+          var key = topBytes[i].key;
+          var fields = key.split(SEP);
           result.push({
             ipsource: fields[0],
             udpsourceport: fields[1],
             ipdestination: fields[2],
             udpdestinationport: fields[3],
-            bps: 8 * top[i].value
+            bps: 8 * topBytes[i].value,
+            pps: pktMap[key] ? pktMap[key] : 0
           });
         }
       }

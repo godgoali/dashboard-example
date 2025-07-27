@@ -151,7 +151,8 @@ $(function() {
         row.append($('<td>').text(atk.udpsourceport));
         row.append($('<td>').text(atk.ipdestination));
         row.append($('<td>').text(atk.udpdestinationport));
-        row.append($('<td>').text(atk.bps));
+        row.append($('<td>').text((atk.bps/1000000).toFixed(2)));
+        row.append($('<td>').text(atk.pps));
         tbody.append(row);
       });
     }
