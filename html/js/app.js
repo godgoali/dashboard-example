@@ -144,15 +144,17 @@ $(function() {
   function updateAttacks(data) {
     var tbody = $('#attackTable tbody');
     tbody.empty();
-    if(data && data.length) {
+    if(Array.isArray(data)) {
       data.forEach(function(atk) {
         var row = $('<tr>');
         row.append($('<td>').text(atk.ipsource));
         row.append($('<td>').text(atk.udpsourceport));
         row.append($('<td>').text(atk.ipdestination));
         row.append($('<td>').text(atk.udpdestinationport));
-        row.append($('<td>').text((atk.bps/1000000).toFixed(2)));
-        row.append($('<td>').text(atk.pps));
+        var mbps = ((Number(atk.bps) || 0) / 1000000).toFixed(2);
+        var pps = Number(atk.pps) || 0;
+        row.append($('<td>').text(mbps));
+        row.append($('<td>').text(pps));
         tbody.append(row);
       });
     }
@@ -161,6 +163,7 @@ $(function() {
   function pollAttacks() {
     $.ajax({
       url: attackURL,
+      dataType: 'json',
       success: function(data) {
         updateAttacks(data);
         setTimeout(pollAttacks, 2000);
