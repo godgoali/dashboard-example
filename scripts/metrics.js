@@ -18,6 +18,7 @@ setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:2, fs:S
 setFlow('dashboard_example_ddos',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
    value:'bytes', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
+
 setFlow('dashboard_example_ddos_pkts',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
    value:'frames', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
