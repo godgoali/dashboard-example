@@ -89,7 +89,7 @@ setHttpHandler(function(req) {
             ipdestination: fields[2],
             udpdestinationport: fields[3],
             bps: 8 * topBytes[i].value,
-            pps: pktMap[key] ? pktMap[key] / FLOW_INTERVAL : 0
+            pps: pktMap[key] ? Math.round(pktMap[key] / FLOW_INTERVAL) : 0
           });
         }
       }
