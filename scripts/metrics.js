@@ -10,10 +10,18 @@ var trend = new Trend(300,1);
 var points;
 
 var SEP = '_SEP_';
+var FLOW_INTERVAL = 2; // seconds
 
 // define flows, prepend application name to avoid name clashes with other apps
-setFlow('dashboard_example_bytes', {value:'bytes',t:2, fs: SEP});
-setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:2, fs:SEP}); 
+setFlow('dashboard_example_bytes', {value:'bytes',t:FLOW_INTERVAL, fs: SEP});
+setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:FLOW_INTERVAL, fs:SEP});
+// capture udp flows for attack visibility
+setFlow('dashboard_example_ddos',
+  {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
+   value:'bytes', n:20, t:FLOW_INTERVAL, fs:SEP, filter:'ipprotocol=17'});
+setFlow('dashboard_example_ddos_pkts',
+  {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
+   value:'frames', n:20, t:FLOW_INTERVAL, fs:SEP, filter:'ipprotocol=17'});
 
 var other = '-other-';
 function calculateTopN(metric,n,minVal,total_bps) {     
@@ -56,9 +64,35 @@ setHttpHandler(function(req) {
      
   switch(path[0]) {
     case 'trend':
-      if(path.length > 1) throw "not_found"; 
+      if(path.length > 1) throw "not_found";
       result = {};
       result.trend = req.query.after ? trend.after(parseInt(req.query.after)) : trend;
+      break;
+    case 'attacks':
+      if(path.length > 1) throw "not_found";
+      var topBytes = activeFlows('ALL','dashboard_example_ddos',20,0,'sum');
+      var topPkts = activeFlows('ALL','dashboard_example_ddos_pkts',20,0,'sum');
+      var pktMap = {};
+      result = [];
+      if(topPkts) {
+        for(var j = 0; j < topPkts.length; j++) {
+          pktMap[topPkts[j].key] = topPkts[j].value;
+        }
+      }
+      if(topBytes) {
+        for(var i = 0; i < topBytes.length; i++) {
+          var key = topBytes[i].key;
+          var fields = key.split(SEP);
+          result.push({
+            ipsource: fields[0],
+            udpsourceport: fields[1],
+            ipdestination: fields[2],
+            udpdestinationport: fields[3],
+            bps: 8 * topBytes[i].value,
+            pps: pktMap[key] ? Math.round(pktMap[key] / FLOW_INTERVAL) : 0
+          });
+        }
+      }
       break;
     case 'metric':
       if(path.length == 1) result = points;

@@ -1,6 +1,7 @@
 $(function() { 
   var restPath =  '../scripts/metrics.js/';
   var dataURL = restPath + 'trend/json';
+  var attackURL = restPath + 'attacks/json';
   var SEP = '_SEP_';
 
   var defaults = {
@@ -139,10 +140,45 @@ $(function() {
       timeout: 60000
     });
   };
+
+  function updateAttacks(data) {
+    var tbody = $('#attackTable tbody');
+    tbody.empty();
+    if(Array.isArray(data)) {
+      data.forEach(function(atk) {
+        var row = $('<tr>');
+        row.append($('<td>').text(atk.ipsource));
+        row.append($('<td>').text(atk.udpsourceport));
+        row.append($('<td>').text(atk.ipdestination));
+        row.append($('<td>').text(atk.udpdestinationport));
+        var bps = Number(atk.bps) || 0;
+        var pps = Number(atk.pps) || 0;
+        row.append($('<td>').text(bps));
+        row.append($('<td>').text(pps));
+        tbody.append(row);
+      });
+    }
+  }
+
+  function pollAttacks() {
+    $.ajax({
+      url: attackURL,
+      dataType: 'json',
+      success: function(data) {
+        updateAttacks(data);
+        setTimeout(pollAttacks, 2000);
+      },
+      error: function(result,status,errorThrown) {
+        setTimeout(pollAttacks,5000);
+      },
+      timeout: 60000
+    });
+  };
 	
   $(window).resize(function() {
     $.event.trigger({type:'updateChart'});
   });
 
   pollTrends();
+  pollAttacks();
 });
