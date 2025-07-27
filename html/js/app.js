@@ -151,9 +151,9 @@ $(function() {
         row.append($('<td>').text(atk.udpsourceport));
         row.append($('<td>').text(atk.ipdestination));
         row.append($('<td>').text(atk.udpdestinationport));
-        var mbps = ((Number(atk.bps) || 0) / 1000000).toFixed(2);
+        var bps = Number(atk.bps) || 0;
         var pps = Number(atk.pps) || 0;
-        row.append($('<td>').text(mbps));
+        row.append($('<td>').text(bps));
         row.append($('<td>').text(pps));
         tbody.append(row);
       });

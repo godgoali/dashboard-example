@@ -10,18 +10,18 @@ var trend = new Trend(300,1);
 var points;
 
 var SEP = '_SEP_';
+var FLOW_INTERVAL = 2; // seconds
 
 // define flows, prepend application name to avoid name clashes with other apps
-setFlow('dashboard_example_bytes', {value:'bytes',t:2, fs: SEP});
-setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:2, fs:SEP});
+setFlow('dashboard_example_bytes', {value:'bytes',t:FLOW_INTERVAL, fs: SEP});
+setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:FLOW_INTERVAL, fs:SEP});
 // capture udp flows for attack visibility
 setFlow('dashboard_example_ddos',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
-   value:'bytes', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
-
+   value:'bytes', n:20, t:FLOW_INTERVAL, fs:SEP, filter:'ipprotocol=17'});
 setFlow('dashboard_example_ddos_pkts',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
-   value:'frames', n:20, t:2, fs:SEP, filter:'ipprotocol=17'});
+   value:'frames', n:20, t:FLOW_INTERVAL, fs:SEP, filter:'ipprotocol=17'});
 
 var other = '-other-';
 function calculateTopN(metric,n,minVal,total_bps) {     
@@ -89,7 +89,7 @@ setHttpHandler(function(req) {
             ipdestination: fields[2],
             udpdestinationport: fields[3],
             bps: 8 * topBytes[i].value,
-            pps: pktMap[key] ? pktMap[key] : 0
+            pps: pktMap[key] ? pktMap[key] / FLOW_INTERVAL : 0
           });
         }
       }
