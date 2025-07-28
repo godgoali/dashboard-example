@@ -124,6 +124,7 @@ setHttpHandler(function(req) {
       break;
     case 'filter':
       if(path.length > 1) throw 'not_found';
+
       var sip, dip;
       if(req.method && req.method.toUpperCase() === 'POST') {
         try {
@@ -140,6 +141,7 @@ setHttpHandler(function(req) {
         sip = req.query.sip;
         dip = req.query.dip;
       }
+
       if(!sip || !dip) throw 'bad_request';
       var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
       var headers = {

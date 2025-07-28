@@ -189,6 +189,7 @@ $(function() {
       console.error('Usage: debugCreateRule("1.2.3.4", "5.6.7.8")');
       return;
     }
+
     var url = restPath + 'filter';
     var payload = JSON.stringify({sip:sip, dip:dip});
     console.log('DEBUG POST', url, payload);
