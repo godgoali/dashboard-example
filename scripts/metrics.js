@@ -124,8 +124,24 @@ setHttpHandler(function(req) {
       break;
     case 'filter':
       if(path.length > 1) throw 'not_found';
-      var sip = req.query.sip;
-      var dip = req.query.dip;
+
+      var sip, dip;
+      if(req.method && req.method.toUpperCase() === 'POST') {
+        try {
+          var body = req.body || req.data || '';
+          if(body) {
+            var obj = JSON.parse(body);
+            sip = obj.sip;
+            dip = obj.dip;
+          }
+        } catch(e) {
+          throw 'bad_request';
+        }
+      } else {
+        sip = req.query.sip;
+        dip = req.query.dip;
+      }
+
       if(!sip || !dip) throw 'bad_request';
       var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
       var headers = {
@@ -176,6 +192,7 @@ setEventHandler(function(evt) {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
+
   fwLog('POST ' + url + ' payload=' + JSON.stringify(payload));
 
   try {
