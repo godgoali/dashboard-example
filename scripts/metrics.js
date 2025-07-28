@@ -33,7 +33,7 @@ setFlow('udp_ddos', {
 
 setThreshold('udp_ddos', {
   metric: 'udp_ddos',
-  value: 10000,
+  value: 100,
   byFlow: true,
   timeout: 30
 });
