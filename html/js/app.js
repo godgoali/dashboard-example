@@ -3,6 +3,8 @@ $(function() {
   var dataURL = restPath + 'trend/json';
   var attackURL = restPath + 'attacks/json';
   var SEP = '_SEP_';
+  var FIREWALL_URL = 'http://192.168.10.102/filters';
+  var FIREWALL_TOKEN = 'changeme';
 
   var defaults = {
     tab:0,
@@ -181,4 +183,18 @@ $(function() {
 
   pollTrends();
   pollAttacks();
+
+  window.debugCreateRule = function(sip, dip) {
+    var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
+    console.log('DEBUG POST', FIREWALL_URL, payload);
+    $.ajax({
+      url: FIREWALL_URL,
+      method: 'POST',
+      data: JSON.stringify(payload),
+      contentType: 'application/json',
+      headers: { 'Authorization': 'Bearer ' + FIREWALL_TOKEN },
+      success: function(resp) { console.log('DEBUG RESPONSE', resp); },
+      error: function(xhr,status,err) { console.error('DEBUG ERROR', err); }
+    });
+  };
 });

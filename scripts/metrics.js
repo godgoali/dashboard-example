@@ -12,6 +12,15 @@ var points;
 var SEP = '_SEP_';
 var FLOW_INTERVAL = 2; // seconds
 
+// firewall REST API details
+var FIREWALL_URL = 'http://192.168.10.102/filters';
+var FIREWALL_TOKEN = 'changeme';
+var FIREWALL_DEBUG = true;
+
+function fwLog(msg) {
+  if(FIREWALL_DEBUG) logInfo('FWDBG ' + msg);
+}
+
 // define flows, prepend application name to avoid name clashes with other apps
 setFlow('dashboard_example_bytes', {value:'bytes',t:FLOW_INTERVAL, fs: SEP});
 setFlow('dashboard_example_stack', {keys:'stack', value:'bytes', n:10, t:FLOW_INTERVAL, fs:SEP});
@@ -27,12 +36,12 @@ setFlow('dashboard_example_ddos_pkts',
 setFlow('udp_ddos', {
   keys: 'ipdestination,ipsource,udpdestinationport',
   value: 'frames',
-  filter: 'direction=ingress&udpsourceport!=0',
+  filter: 'direction=ingress&ipprotocol=17&udpsourceport!=0',
   t: FLOW_INTERVAL
 });
 
-// Trigger when more than 100 packets per second are seen for a flow
-// FLOW_INTERVAL is two seconds, so threshold value is 100pps * 2 seconds
+// Trigger when more than 10,000 packets per second are seen for a flow
+// FLOW_INTERVAL is two seconds, so threshold value is 10kpps * 2 seconds
 setThreshold('udp_ddos', {
   metric: 'udp_ddos',
   value: 200,
@@ -145,17 +154,18 @@ setEventHandler(function(evt) {
     dip: dip
   };
 
-  // firewall REST API endpoint
-  var url = "http://192.168.10.102/filters";
-  // bearer token used for authentication
-  var token = 'changeme';
+  // firewall REST API endpoint and token
+  var url = FIREWALL_URL;
+  var token = FIREWALL_TOKEN;
   var headers = {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
+  fwLog('POST ' + url + ' payload=' + JSON.stringify(payload));
 
   try {
     var response = http(url, 'POST', JSON.stringify(payload), 'application/json', headers);
+    fwLog('RESPONSE ' + response);
     var obj = JSON.parse(response);
 
     if (obj && obj.result === 'ok' && obj.idx !== undefined) {
@@ -167,7 +177,8 @@ setEventHandler(function(evt) {
         var delUrl = url + '/' + idx;
         try {
           http(delUrl, 'DELETE', null, null, headers);
-          logInfo("\u{1F5D1}\uFE0F Rule auto-unban (DELETE) untuk " + ruleKey + " dengan idx: " + idx);
+          fwLog('DELETE ' + delUrl);
+          logInfo("\u1F5D1\uFE0F Rule auto-unban (DELETE) untuk " + ruleKey + " dengan idx: " + idx);
           delete activeRules[ruleKey];
         } catch (e) {
           logWarning("\u274C Gagal hapus rule: " + delUrl + " \u2192 " + e);
