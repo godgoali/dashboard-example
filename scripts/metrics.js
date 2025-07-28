@@ -167,7 +167,7 @@ setEventHandler(function(evt) {
         var delUrl = url + '/' + idx;
         try {
           http(delUrl, 'DELETE', null, null, headers);
-          logInfo("\u1F5D1\uFE0F Rule auto-unban (DELETE) untuk " + ruleKey + " dengan idx: " + idx);
+          logInfo("\u{1F5D1}\uFE0F Rule auto-unban (DELETE) untuk " + ruleKey + " dengan idx: " + idx);
           delete activeRules[ruleKey];
         } catch (e) {
           logWarning("\u274C Gagal hapus rule: " + delUrl + " \u2192 " + e);
