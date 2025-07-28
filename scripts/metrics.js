@@ -176,7 +176,6 @@ setEventHandler(function(evt) {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
-
   fwLog('POST ' + url + ' payload=' + JSON.stringify(payload));
 
   try {
