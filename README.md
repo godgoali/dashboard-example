@@ -13,5 +13,9 @@ flows. Each entry displays source and destination IP/port as well as the
 traffic in bits per second and packets per second. Access the live attack
 data using the REST endpoint `../scripts/metrics.js/attacks/json`.
 
+When a flow exceeds **10,000 packets per second**, a firewall rule is
+automatically created via the `/filters` REST API. Rules are removed after
+five minutes.
+
 For more information, visit:
 http://www.sFlow-RT.com

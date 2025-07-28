@@ -23,6 +23,23 @@ setFlow('dashboard_example_ddos_pkts',
   {keys:'ipsource,udpsourceport,ipdestination,udpdestinationport',
    value:'frames', n:20, t:FLOW_INTERVAL, fs:SEP, filter:'ipprotocol=17'});
 
+// flow and threshold for automatic firewall mitigation
+setFlow('udp_ddos', {
+  keys: 'ipdestination,ipsource,udpdestinationport',
+  value: 'frames',
+  filter: 'direction=ingress&udpsourceport!=0',
+  t: FLOW_INTERVAL
+});
+
+setThreshold('udp_ddos', {
+  metric: 'udp_ddos',
+  value: 10000,
+  byFlow: true,
+  timeout: 30
+});
+
+var activeRules = {};  // Format: key = sip-dip -> value = idx
+
 var other = '-other-';
 function calculateTopN(metric,n,minVal,total_bps) {     
   var total, top, topN, i, bps;
@@ -106,4 +123,59 @@ setHttpHandler(function(req) {
   } 
   return result;
 });
+
+setEventHandler(function(evt) {
+  var parts = evt.flowKey.split(',');
+  var dip = parts[0];
+  var sip = parts[1];
+
+  var ruleKey = sip + '-' + dip;
+  if (activeRules[ruleKey]) {
+    logInfo("\u23F1\uFE0F Rule sudah aktif untuk " + ruleKey);
+    return;
+  }
+
+  var payload = {
+    enabled: true,
+    log: true,
+    action: 0,
+    sip: sip,
+    dip: dip
+  };
+
+  var url = "http://192.168.10.102/filters";
+  var headers = {
+    "Authorization": "Bearer changeme",
+    "Content-Type": "application/json"
+  };
+
+  try {
+    var response = http(url, 'POST', JSON.stringify(payload), 'application/json', headers);
+    var obj = JSON.parse(response);
+
+    if (obj && obj.result === 'ok' && obj.idx !== undefined) {
+      var idx = obj.idx;
+      activeRules[ruleKey] = idx;
+      logInfo("\u2705 Rule dibuat untuk " + ruleKey + " dengan idx: " + idx);
+
+      setTimeout(function() {
+        var delUrl = url + '/' + idx;
+        try {
+          http(delUrl, 'DELETE', null, null, headers);
+          logInfo("\u1F5D1\uFE0F Rule auto-unban (DELETE) untuk " + ruleKey + " dengan idx: " + idx);
+          delete activeRules[ruleKey];
+        } catch (e) {
+          logWarning("\u274C Gagal hapus rule: " + delUrl + " \u2192 " + e);
+        }
+      }, 5 * 60 * 1000);
+
+    } else {
+      logWarning("\u274C Format response tidak sesuai: " + response);
+    }
+
+  } catch (e) {
+    logWarning("\u274C Error POST rule: " + e);
+  }
+
+}, ['udp_ddos']);
 
