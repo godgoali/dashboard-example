@@ -3,7 +3,8 @@ $(function() {
   var dataURL = restPath + 'trend/json';
   var attackURL = restPath + 'attacks/json';
   var SEP = '_SEP_';
-  var FIREWALL_POST_URL = 'http://192.168.10.102:8080/fites';
+
+  var FIREWALL_POST_URL = 'http://192.168.10.102:8080/filters';
   var FIREWALL_DELETE_URL = 'http://192.168.10.102:8080/filters';
   var FIREWALL_TOKEN = 'changeme';
 
@@ -190,6 +191,7 @@ $(function() {
       console.error('Usage: debugCreateRule("1.2.3.4", "5.6.7.8")');
       return;
     }
+
     var url = restPath + 'filter';
     var payload = JSON.stringify({sip:sip, dip:dip});
     console.log('DEBUG POST', url, payload);

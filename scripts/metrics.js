@@ -13,8 +13,9 @@ var SEP = '_SEP_';
 var FLOW_INTERVAL = 2; // seconds
 
 // firewall REST API details
-var FIREWALL_POST_URL = 'http://192.168.10.102:8080/fites';
+var FIREWALL_POST_URL = 'http://192.168.10.102:8080/filters';
 var FIREWALL_DELETE_URL = 'http://192.168.10.102:8080/filters';
+
 var FIREWALL_TOKEN = 'changeme';
 var FIREWALL_DEBUG = true;
 
@@ -147,6 +148,7 @@ setHttpHandler(function(req) {
         'Authorization': 'Bearer ' + FIREWALL_TOKEN,
         'Content-Type': 'application/json'
       };
+
       fwLog('PROXY POST ' + FIREWALL_POST_URL + ' payload=' + JSON.stringify(payload));
       var r = http(FIREWALL_POST_URL, 'POST', JSON.stringify(payload), 'application/json', headers);
       fwLog('PROXY RESP ' + r);
