@@ -189,14 +189,12 @@ $(function() {
       console.error('Usage: debugCreateRule("1.2.3.4", "5.6.7.8")');
       return;
     }
-    var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
-    console.log('DEBUG POST', FIREWALL_URL, payload);
+    var url = restPath + 'filter?sip=' + encodeURIComponent(sip) +
+              '&dip=' + encodeURIComponent(dip);
+    console.log('DEBUG POST', url);
     $.ajax({
-      url: FIREWALL_URL,
-      method: 'POST',
-      data: JSON.stringify(payload),
-      contentType: 'application/json',
-      headers: { 'Authorization': 'Bearer ' + FIREWALL_TOKEN },
+      url: url,
+      dataType: 'json',
       success: function(resp) { console.log('DEBUG RESPONSE', resp); },
       error: function(xhr,status,err) { console.error('DEBUG ERROR', err); }
     });

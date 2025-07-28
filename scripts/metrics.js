@@ -122,6 +122,21 @@ setHttpHandler(function(req) {
         }
       }
       break;
+    case 'filter':
+      if(path.length > 1) throw 'not_found';
+      var sip = req.query.sip;
+      var dip = req.query.dip;
+      if(!sip || !dip) throw 'bad_request';
+      var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
+      var headers = {
+        'Authorization': 'Bearer ' + FIREWALL_TOKEN,
+        'Content-Type': 'application/json'
+      };
+      fwLog('PROXY POST ' + FIREWALL_URL + ' payload=' + JSON.stringify(payload));
+      var r = http(FIREWALL_URL, 'POST', JSON.stringify(payload), 'application/json', headers);
+      fwLog('PROXY RESP ' + r);
+      result = JSON.parse(r);
+      break;
     case 'metric':
       if(path.length == 1) result = points;
       else {
