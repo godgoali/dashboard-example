@@ -185,6 +185,10 @@ $(function() {
   pollAttacks();
 
   window.debugCreateRule = function(sip, dip) {
+    if(typeof sip !== 'string' || typeof dip !== 'string') {
+      console.error('Usage: debugCreateRule("1.2.3.4", "5.6.7.8")');
+      return;
+    }
     var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
     console.log('DEBUG POST', FIREWALL_URL, payload);
     $.ajax({

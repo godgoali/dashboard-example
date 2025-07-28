@@ -44,7 +44,7 @@ setFlow('udp_ddos', {
 // FLOW_INTERVAL is two seconds, so threshold value is 10kpps * 2 seconds
 setThreshold('udp_ddos', {
   metric: 'udp_ddos',
-  value: 200,
+  value: 20000,
   byFlow: true,
   timeout: 30
 });

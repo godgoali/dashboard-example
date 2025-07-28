@@ -18,8 +18,9 @@ automatically created via the `/filters` REST API. Rules are removed after
 five minutes.
 
 Use the browser console to manually test rule creation by calling the
-`debugCreateRule(sip, dip)` function. The dashboard logs the request and
-response to help debug connectivity with the firewall API.
+`debugCreateRule('source_ip', 'destination_ip')` function. Replace the
+arguments with the actual addresses you want to test. The dashboard logs
+the request and response to help debug connectivity with the firewall API.
 
 For more information, visit:
 http://www.sFlow-RT.com
