@@ -1,7 +1,10 @@
 $(function() { 
   var restPath =  '../scripts/metrics.js/';
   var dataURL = restPath + 'trend/json';
+  var attackURL = restPath + 'attacks/json';
   var SEP = '_SEP_';
+  var FIREWALL_URL = 'http://192.168.10.102/filters';
+  var FIREWALL_TOKEN = 'changeme';
 
   var defaults = {
     tab:0,
@@ -139,10 +142,68 @@ $(function() {
       timeout: 60000
     });
   };
+
+  function updateAttacks(data) {
+    var tbody = $('#attackTable tbody');
+    tbody.empty();
+    if(Array.isArray(data)) {
+      data.forEach(function(atk) {
+        var row = $('<tr>');
+        row.append($('<td>').text(atk.ipsource));
+        row.append($('<td>').text(atk.udpsourceport));
+        row.append($('<td>').text(atk.ipdestination));
+        row.append($('<td>').text(atk.udpdestinationport));
+        var bps = Number(atk.bps) || 0;
+        var pps = Number(atk.pps) || 0;
+        row.append($('<td>').text(bps));
+        row.append($('<td>').text(pps));
+        tbody.append(row);
+      });
+    }
+  }
+
+  function pollAttacks() {
+    $.ajax({
+      url: attackURL,
+      dataType: 'json',
+      success: function(data) {
+        updateAttacks(data);
+        setTimeout(pollAttacks, 2000);
+      },
+      error: function(result,status,errorThrown) {
+        setTimeout(pollAttacks,5000);
+      },
+      timeout: 60000
+    });
+  };
 	
   $(window).resize(function() {
     $.event.trigger({type:'updateChart'});
   });
 
   pollTrends();
+  pollAttacks();
+
+  window.debugCreateRule = function(sip, dip) {
+    if(typeof sip !== 'string' || typeof dip !== 'string') {
+      console.error('Usage: debugCreateRule("1.2.3.4", "5.6.7.8")');
+      return;
+    }
+    var url = restPath + 'filter';
+    var payload = JSON.stringify({sip:sip, dip:dip});
+    console.log('DEBUG POST', url, payload);
+    $.ajax({
+      url: url,
+      method: 'POST',
+      contentType: 'application/json',
+      dataType: 'json',
+      data: payload,
+      success: function(resp) {
+        console.log('DEBUG RESPONSE', resp);
+      },
+      error: function(xhr,status,err) {
+        console.error('DEBUG ERROR', err);
+      }
+    });
+  };
 });
