@@ -3,7 +3,9 @@ $(function() {
   var dataURL = restPath + 'trend/json';
   var attackURL = restPath + 'attacks/json';
   var SEP = '_SEP_';
-  var FIREWALL_URL = 'http://192.168.10.102/filters';
+
+  var FIREWALL_POST_URL = 'http://192.168.10.102:8080/filters';
+  var FIREWALL_DELETE_URL = 'http://192.168.10.102:8080/filters';
   var FIREWALL_TOKEN = 'changeme';
 
   var defaults = {

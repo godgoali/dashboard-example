@@ -14,15 +14,16 @@ traffic in bits per second and packets per second. Access the live attack
 data using the REST endpoint `../scripts/metrics.js/attacks/json`.
 
 When a UDP flow exceeds **10,000 packets per second**, a firewall rule is
-automatically created via the `/filters` REST API. Rules are removed after
-five minutes.
+automatically created via the POST `/fites` REST API. Rules are removed after
+five minutes using DELETE `/filters/{id}`.
 
 Use the browser console to manually test rule creation by calling the
 `debugCreateRule('source_ip', 'destination_ip')` function. Replace the
 arguments with the actual addresses you want to test. The dashboard logs
 the request and response. The helper calls the `../scripts/metrics.js/filter`
-endpoint on the sFlow-RT server which proxies the request to the firewall,
-avoiding cross-origin errors in the browser.
+endpoint on the sFlow-RT server which proxies the request to the firewall
+at `http://192.168.10.102:8080/fites`, avoiding cross-origin errors in the
+browser. Rules are later deleted from `http://192.168.10.102:8080/filters/{id}`.
 
 For more information, visit:
 http://www.sFlow-RT.com

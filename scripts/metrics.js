@@ -13,7 +13,9 @@ var SEP = '_SEP_';
 var FLOW_INTERVAL = 2; // seconds
 
 // firewall REST API details
-var FIREWALL_URL = 'http://192.168.10.102/filters';
+var FIREWALL_POST_URL = 'http://192.168.10.102:8080/filters';
+var FIREWALL_DELETE_URL = 'http://192.168.10.102:8080/filters';
+
 var FIREWALL_TOKEN = 'changeme';
 var FIREWALL_DEBUG = true;
 
@@ -124,7 +126,6 @@ setHttpHandler(function(req) {
       break;
     case 'filter':
       if(path.length > 1) throw 'not_found';
-
       var sip, dip;
       if(req.method && req.method.toUpperCase() === 'POST') {
         try {
@@ -141,15 +142,15 @@ setHttpHandler(function(req) {
         sip = req.query.sip;
         dip = req.query.dip;
       }
-
       if(!sip || !dip) throw 'bad_request';
       var payload = {enabled:true, log:true, action:0, sip:sip, dip:dip};
       var headers = {
         'Authorization': 'Bearer ' + FIREWALL_TOKEN,
         'Content-Type': 'application/json'
       };
-      fwLog('PROXY POST ' + FIREWALL_URL + ' payload=' + JSON.stringify(payload));
-      var r = http(FIREWALL_URL, 'POST', JSON.stringify(payload), 'application/json', headers);
+
+      fwLog('PROXY POST ' + FIREWALL_POST_URL + ' payload=' + JSON.stringify(payload));
+      var r = http(FIREWALL_POST_URL, 'POST', JSON.stringify(payload), 'application/json', headers);
       fwLog('PROXY RESP ' + r);
       result = JSON.parse(r);
       break;
@@ -186,17 +187,18 @@ setEventHandler(function(evt) {
   };
 
   // firewall REST API endpoint and token
-  var url = FIREWALL_URL;
+  var postUrl = FIREWALL_POST_URL;
+  var delBase = FIREWALL_DELETE_URL;
   var token = FIREWALL_TOKEN;
   var headers = {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
 
-  fwLog('POST ' + url + ' payload=' + JSON.stringify(payload));
+  fwLog('POST ' + postUrl + ' payload=' + JSON.stringify(payload));
 
   try {
-    var response = http(url, 'POST', JSON.stringify(payload), 'application/json', headers);
+    var response = http(postUrl, 'POST', JSON.stringify(payload), 'application/json', headers);
     fwLog('RESPONSE ' + response);
     var obj = JSON.parse(response);
 
@@ -206,7 +208,7 @@ setEventHandler(function(evt) {
       logInfo("\u2705 Rule dibuat untuk " + ruleKey + " dengan idx: " + idx);
 
       setTimeout(function() {
-        var delUrl = url + '/' + idx;
+        var delUrl = delBase + '/' + idx;
         try {
           http(delUrl, 'DELETE', null, null, headers);
           fwLog('DELETE ' + delUrl);
