@@ -31,9 +31,11 @@ setFlow('udp_ddos', {
   t: FLOW_INTERVAL
 });
 
+// Trigger when more than 100 packets per second are seen for a flow
+// FLOW_INTERVAL is two seconds, so threshold value is 100pps * 2 seconds
 setThreshold('udp_ddos', {
   metric: 'udp_ddos',
-  value: 100,
+  value: 200,
   byFlow: true,
   timeout: 30
 });
@@ -143,9 +145,12 @@ setEventHandler(function(evt) {
     dip: dip
   };
 
+  // firewall REST API endpoint
   var url = "http://192.168.10.102/filters";
+  // bearer token used for authentication
+  var token = 'changeme';
   var headers = {
-    "Authorization": "Bearer changeme",
+    "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
 
