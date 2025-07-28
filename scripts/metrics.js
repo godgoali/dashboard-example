@@ -44,7 +44,7 @@ setFlow('udp_ddos', {
 // FLOW_INTERVAL is two seconds, so threshold value is 10kpps * 2 seconds
 setThreshold('udp_ddos', {
   metric: 'udp_ddos',
-  value: 20000,
+  value: 200,
   byFlow: true,
   timeout: 30
 });
@@ -161,7 +161,6 @@ setEventHandler(function(evt) {
     "Authorization": "Bearer " + token,
     "Content-Type": "application/json"
   };
-
   fwLog('POST ' + url + ' payload=' + JSON.stringify(payload));
 
   try {
