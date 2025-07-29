@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
-    "build": "nuxt build",
-    "start": "nuxt start"
+
+    "dev": "nuxt dev nuxt",
+    "build": "nuxt build nuxt",
+    "start": "nuxt start nuxt/.output"
   },
   "dependencies": {
     "nuxt": "^4.0.2",

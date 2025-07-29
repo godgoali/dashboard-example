@@ -28,8 +28,14 @@ npm install
 
 ### Start development server
 
+Run the Nuxt development server which loads the project found in the
+`nuxt` directory:
+
 ```bash
 npm run dev
 ```
+
+Then open `http://localhost:3000/` in your browser to see the Tabler
+dashboard with a real-time chart.
 
 The application fetches trend data from `scripts/metrics.js/trend/json` and updates a line chart in real time.
