@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+
     "dev": "nuxt dev nuxt",
     "build": "nuxt build nuxt",
     "start": "nuxt start nuxt/.output"
