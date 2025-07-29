@@ -1,0 +1,15 @@
+{
+  "name": "dashboard-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev nuxt",
+    "build": "nuxt build nuxt",
+    "start": "nuxt start nuxt/.output"
+  },
+  "dependencies": {
+    "nuxt": "^4.0.2",
+    "@tabler/core": "^1.4.0",
+    "chart.js": "^4.4.1"
+  }
+}

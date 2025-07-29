@@ -15,3 +15,27 @@ data using the REST endpoint `../scripts/metrics.js/attacks/json`.
 
 For more information, visit:
 http://www.sFlow-RT.com
+
+## Nuxt.js Version
+
+This repository now includes a simple [Nuxt](https://nuxt.com) application under the `nuxt` directory. It uses the [Tabler](https://tabler.io/) theme and displays a real-time chart using data from the `scripts/metrics.js` API.
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Start development server
+
+Run the Nuxt development server which loads the project found in the
+`nuxt` directory:
+
+```bash
+npm run dev
+```
+
+Then open `http://localhost:3000/` in your browser to see the Tabler
+dashboard with a real-time chart.
+
+The application fetches trend data from `scripts/metrics.js/trend/json` and updates a line chart in real time.
